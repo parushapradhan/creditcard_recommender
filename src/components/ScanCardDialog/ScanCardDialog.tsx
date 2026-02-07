@@ -106,7 +106,9 @@ const ScanCardDialog: React.FC<ScanCardDialogProps> = ({ open, onClose, onScanne
             return;
           }
           streamRef.current = stream;
-          videoRef.current.srcObject = stream;
+          const video = videoRef.current;
+          video.srcObject = stream;
+          video.play().catch(() => {});
         })
         .catch(() => {
           if (mounted) {
@@ -140,7 +142,6 @@ const ScanCardDialog: React.FC<ScanCardDialogProps> = ({ open, onClose, onScanne
 
         scanningRef.current = true;
         setStatus('processing');
-
         const canvas = document.createElement('canvas');
         const scale = 0.6;
         canvas.width = Math.floor(v.videoWidth * scale);
@@ -181,8 +182,13 @@ const ScanCardDialog: React.FC<ScanCardDialogProps> = ({ open, onClose, onScanne
                 onClose();
                 return;
               }
-            } catch {
-              // ignore single-frame errors, keep scanning
+            } catch (err) {
+              if (!workerRef.current) {
+                setStatus('error');
+                setErrorMessage('Scan engine failed to load. Use "Add card details" to enter manually.');
+                stopCamera();
+                return;
+              }
             }
             setStatus('camera');
             scanningRef.current = false;
@@ -195,14 +201,17 @@ const ScanCardDialog: React.FC<ScanCardDialogProps> = ({ open, onClose, onScanne
       intervalRef.current = setInterval(() => {
         runOneScan.current();
       }, SCAN_INTERVAL_MS);
+      runOneScan.current();
     };
 
     const onCanPlay = () => startAutoScan();
     video.addEventListener('canplay', onCanPlay);
+    video.addEventListener('loadeddata', onCanPlay);
     if (video.readyState >= 2) startAutoScan();
 
     return () => {
       video.removeEventListener('canplay', onCanPlay);
+      video.removeEventListener('loadeddata', onCanPlay);
       if (intervalRef.current) {
         clearInterval(intervalRef.current);
         intervalRef.current = null;
@@ -257,7 +266,7 @@ const ScanCardDialog: React.FC<ScanCardDialogProps> = ({ open, onClose, onScanne
               }}
             >
               <Typography variant="body2">
-                {status === 'processing' ? 'Reading card...' : 'Position your card in the frame'}
+                {status === 'processing' ? 'Reading card...' : 'Auto-scanning... Hold your card in the frame'}
               </Typography>
             </Box>
           </Box>

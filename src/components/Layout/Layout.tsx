@@ -1,6 +1,6 @@
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
-import Header from '../Header/Header';
+import BottomNav from '../BottomNav/BottomNav';
 
 interface IProps {
   children: React.ReactNode;
@@ -12,7 +12,6 @@ const Layout: React.FC<IProps> = ({ children }) => (
       minHeight: '100dvh',
       minHeight: '100vh',
       bgcolor: 'background.default',
-      pb: 'max(12px, env(safe-area-inset-bottom))',
       px: 0,
       pt: 0,
     }}
@@ -25,13 +24,14 @@ const Layout: React.FC<IProps> = ({ children }) => (
         pr: 'max(16px, env(safe-area-inset-right))',
         minHeight: '100dvh',
         minHeight: '100vh',
+        pb: 'max(12px, env(safe-area-inset-bottom))',
       }}
     >
-      <Header />
-      <Box component="main" sx={{ pt: 2, pb: 2 }}>
+      <Box component="main" sx={{ pt: 2, pb: 10 }}>
         {children}
       </Box>
     </Container>
+    <BottomNav />
   </Box>
 );
 

@@ -12,9 +12,26 @@ import QrCodeScannerIcon from '@mui/icons-material/QrCodeScanner';
 import Card from '../components/Card/Card';
 import Layout from '../components/Layout/Layout';
 import Divider from '../components/Divider/Divider';
+import ScanCardDialog from '../components/ScanCardDialog/ScanCardDialog';
+import type { ScannedCardData } from '../components/ScanCardDialog/ScanCardDialog';
+
+export interface CardItem {
+  number: string;
+  cvcNumber: string;
+  validUntil: string;
+  cardHolder: string;
+}
+
+const INITIAL_CARDS: CardItem[] = [
+  { number: '5244 2150 8252 ****', cvcNumber: '824', validUntil: '10 / 30', cardHolder: 'CENK SARI' },
+  { number: '5244 2150 8252 ****', cvcNumber: '824', validUntil: '10 / 30', cardHolder: 'CENK SARI' },
+  { number: '5244 2150 8252 ****', cvcNumber: '824', validUntil: '10 / 30', cardHolder: 'CENK SARI' },
+];
 
 const Cards: React.FC = () => {
+  const [cards, setCards] = useState<CardItem[]>(INITIAL_CARDS);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [scanDialogOpen, setScanDialogOpen] = useState(false);
   const open = Boolean(anchorEl);
 
   const handlePlusClick = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -24,11 +41,23 @@ const Cards: React.FC = () => {
 
   const handleScanCard = () => {
     handleClose();
-    // TODO: open scan card flow (camera / scanner)
+    setScanDialogOpen(true);
   };
   const handleAddCardDetails = () => {
     handleClose();
     // TODO: open add card details form
+  };
+
+  const handleScanned = (data: ScannedCardData) => {
+    setCards((prev) => [
+      ...prev,
+      {
+        number: data.number,
+        cvcNumber: data.cvcNumber,
+        validUntil: data.validUntil,
+        cardHolder: data.cardHolder,
+      },
+    ]);
   };
 
   return (
@@ -83,25 +112,21 @@ const Cards: React.FC = () => {
           <ListItemText>Add card details</ListItemText>
         </MenuItem>
       </Menu>
+      <ScanCardDialog
+        open={scanDialogOpen}
+        onClose={() => setScanDialogOpen(false)}
+        onScanned={handleScanned}
+      />
       <Divider />
-      <Card
-        number="5244 2150 8252 ****"
-        cvcNumber="824"
-        validUntil="10 / 30"
-        cardHolder="CENK SARI"
-      />
-      <Card
-        number="5244 2150 8252 ****"
-        cvcNumber="824"
-        validUntil="10 / 30"
-        cardHolder="CENK SARI"
-      />
-      <Card
-        number="5244 2150 8252 ****"
-        cvcNumber="824"
-        validUntil="10 / 30"
-        cardHolder="CENK SARI"
-      />
+      {cards.map((card, index) => (
+        <Card
+          key={`${card.number}-${index}`}
+          number={card.number}
+          cvcNumber={card.cvcNumber}
+          validUntil={card.validUntil}
+          cardHolder={card.cardHolder}
+        />
+      ))}
       <Divider />
     </Layout>
   );

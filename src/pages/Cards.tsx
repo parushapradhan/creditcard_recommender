@@ -9,12 +9,13 @@ import ListItemText from '@mui/material/ListItemText';
 import AddIcon from '@mui/icons-material/Add';
 import CreditCardIcon from '@mui/icons-material/CreditCard';
 import QrCodeScannerIcon from '@mui/icons-material/QrCodeScanner';
+import MicIcon from '@mui/icons-material/Mic';
+import GraphicEqIcon from '@mui/icons-material/GraphicEq';
 import ReactCreditCards from 'react-credit-cards-2';
 import 'react-credit-cards-2/dist/es/styles-compiled.css';
 import { Swiper, SwiperSlide } from 'swiper/react';
-import { Navigation, Pagination } from 'swiper/modules';
+import { Pagination } from 'swiper/modules';
 import 'swiper/css';
-import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 import Layout from '../components/Layout/Layout';
 import Divider from '../components/Divider/Divider';
@@ -134,12 +135,11 @@ const Cards: React.FC = () => {
       <Divider />
       <Box sx={{ width: '100%', py: 1 }}>
         <Swiper
-          modules={[Navigation, Pagination]}
+          modules={[Pagination]}
           spaceBetween={16}
           slidesPerView={1}
           loop={cards.length > 1}
           pagination={{ clickable: true }}
-          navigation
           className="cards-carousel"
           style={{ paddingBottom: 48 }}
         >
@@ -160,6 +160,54 @@ const Cards: React.FC = () => {
             </SwiperSlide>
           ))}
         </Swiper>
+      </Box>
+      <Box
+        sx={{
+          display: 'flex',
+          alignItems: 'center',
+          width: '100%',
+          mt: 2,
+          px: 0,
+          py: 1,
+          bgcolor: 'grey.800',
+          borderRadius: 9999,
+          border: 'none',
+        }}
+        component="form"
+        onSubmit={(e) => e.preventDefault()}
+      >
+        <IconButton sx={{ color: 'white', ml: 0.5 }} aria-label="Add">
+          <AddIcon />
+        </IconButton>
+        <Box
+          component="input"
+          placeholder="Ask anything"
+          type="text"
+          sx={{
+            flex: 1,
+            border: 'none',
+            background: 'transparent',
+            color: 'white',
+            fontSize: '1rem',
+            py: 1.25,
+            '&::placeholder': { color: 'grey.500' },
+            '&:focus': { outline: 'none' },
+          }}
+        />
+        <IconButton sx={{ color: 'white' }} aria-label="Voice input">
+          <MicIcon />
+        </IconButton>
+        <IconButton
+          sx={{
+            color: 'black',
+            bgcolor: 'white',
+            mr: 0.5,
+            '&:hover': { bgcolor: 'grey.200' },
+          }}
+          aria-label="Send"
+        >
+          <GraphicEqIcon />
+        </IconButton>
       </Box>
       <Divider />
     </Layout>

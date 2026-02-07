@@ -1,13 +1,11 @@
 import { useLocation, useNavigate } from 'react-router-dom';
 import BottomNavigation from '@mui/material/BottomNavigation';
 import BottomNavigationAction from '@mui/material/BottomNavigationAction';
-import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
 import CreditCardIcon from '@mui/icons-material/CreditCard';
 import ReceiptLongIcon from '@mui/icons-material/ReceiptLong';
 import SettingsIcon from '@mui/icons-material/Settings';
 
 const navItems = [
-  { value: '/chat', label: 'Chat', icon: <ChatBubbleOutlineIcon /> },
   { value: '/cards', label: 'Cards', icon: <CreditCardIcon /> },
   { value: '/transactions', label: 'Transactions', icon: <ReceiptLongIcon /> },
   { value: '/profile', label: 'Settings', icon: <SettingsIcon /> },

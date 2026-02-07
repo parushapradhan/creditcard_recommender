@@ -10,9 +10,9 @@ const Saved: React.FC = () => (
       alignItems: 'center',
       gap: 2,
       p: 2,
-      border: 1,
+      border: '1px solid',
       borderColor: 'divider',
-      borderRadius: 2,
+      borderRadius: 3,
     }}
   >
     <Box
@@ -30,7 +30,7 @@ const Saved: React.FC = () => (
       <CreditCardIcon />
     </Box>
     <Box sx={{ flex: 1 }}>
-      <Typography variant="subtitle2">HSBC BANK UK.</Typography>
+      <Typography variant="subtitle2" color="text.primary">HSBC BANK UK.</Typography>
       <Typography variant="caption" color="text.secondary">
         VISA - 9075
       </Typography>

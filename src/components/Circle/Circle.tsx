@@ -6,13 +6,13 @@ interface IProps {
 }
 
 const colorMap: Record<string, string> = {
-  purple: '#8852f6',
-  yellow: '#ffca0c',
-  orange: '#ff571d',
-  gray: '#3e4649',
-  red: '#f42d53',
-  blue: '#0a56ea',
-  green: '#4ed34e',
+  purple: '#616161',
+  yellow: '#9e9e9e',
+  orange: '#757575',
+  gray: '#9e9e9e',
+  red: '#616161',
+  blue: '#424242',
+  green: '#757575',
 };
 
 const Circle: React.FC<IProps> = ({ icon, color }) => (
@@ -20,8 +20,8 @@ const Circle: React.FC<IProps> = ({ icon, color }) => (
     sx={{
       width: 48,
       height: 48,
-      borderRadius: '50%',
-      bgcolor: colorMap[color] || '#9e9e9e',
+      borderRadius: 3,
+      bgcolor: colorMap[color] ?? '#9e9e9e',
       color: '#fff',
       display: 'flex',
       alignItems: 'center',

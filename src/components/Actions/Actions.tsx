@@ -26,7 +26,7 @@ const Actions: React.FC = () => (
             color: 'primary.contrastText',
             width: 56,
             height: 56,
-            '&:hover': { bgcolor: 'primary.dark' },
+            '&:hover': { bgcolor: '#333' },
           }}
         >
           {icon}

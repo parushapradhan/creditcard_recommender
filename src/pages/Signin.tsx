@@ -17,16 +17,17 @@ const Signin: React.FC = () => {
   return (
     <Box
       sx={{
+        minHeight: '100dvh',
         minHeight: '100vh',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        bgcolor: 'primary.main',
+        bgcolor: '#fafafa',
         p: 2,
       }}
     >
-      <Paper elevation={3} sx={{ p: 4, maxWidth: 400, width: '100%' }}>
-        <Typography variant="h4" gutterBottom>
+      <Paper elevation={0} sx={{ p: 3, maxWidth: 400, width: '100%' }}>
+        <Typography variant="h4" gutterBottom color="text.primary">
           Hello! 👋
         </Typography>
         <Typography color="text.secondary" sx={{ mb: 3 }}>
@@ -55,7 +56,7 @@ const Signin: React.FC = () => {
             autoComplete="current-password"
           />
           <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 1 }}>
-            <Link component={RouterLink} to="/" variant="body2">
+            <Link component={RouterLink} to="/" variant="body2" color="text.secondary">
               Forgot password?
             </Link>
           </Box>
@@ -64,7 +65,7 @@ const Signin: React.FC = () => {
           </Button>
         </Box>
         <Typography variant="body2" color="text.secondary" align="center">
-          <Link component={RouterLink} to="/">
+          <Link component={RouterLink} to="/" color="text.primary" fontWeight={500}>
             Click here
           </Link>
           {' if you don\'t have an account'}

@@ -11,14 +11,14 @@ const Destination: React.FC = () => (
       justifyContent: 'space-between',
       gap: 2,
       p: 2,
-      border: 1,
+      border: '1px solid',
       borderColor: 'divider',
-      borderRadius: 2,
+      borderRadius: 3,
     }}
   >
     <Box>
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-        <Typography variant="body1">EURO</Typography>
+        <Typography variant="body1" color="text.primary">EURO</Typography>
         <ExpandMoreIcon fontSize="small" />
       </Box>
       <Typography variant="caption" color="text.secondary">

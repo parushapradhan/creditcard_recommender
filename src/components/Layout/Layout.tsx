@@ -7,10 +7,28 @@ interface IProps {
 }
 
 const Layout: React.FC<IProps> = ({ children }) => (
-  <Box sx={{ minHeight: '100vh', bgcolor: 'background.default', pb: 3 }}>
-    <Container maxWidth="sm">
+  <Box
+    sx={{
+      minHeight: '100dvh',
+      minHeight: '100vh',
+      bgcolor: 'background.default',
+      pb: 'max(12px, env(safe-area-inset-bottom))',
+      px: 0,
+      pt: 0,
+    }}
+  >
+    <Container
+      maxWidth="sm"
+      disableGutters
+      sx={{
+        px: 'max(16px, env(safe-area-inset-left))',
+        pr: 'max(16px, env(safe-area-inset-right))',
+        minHeight: '100dvh',
+        minHeight: '100vh',
+      }}
+    >
       <Header />
-      <Box component="main" sx={{ pt: 2 }}>
+      <Box component="main" sx={{ pt: 2, pb: 2 }}>
         {children}
       </Box>
     </Container>

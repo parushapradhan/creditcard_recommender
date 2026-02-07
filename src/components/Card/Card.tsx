@@ -13,14 +13,15 @@ const Card: React.FC<IProps> = ({ number, cvcNumber, validUntil, cardHolder }) =
   <Box sx={{ mb: 2 }}>
     <MuiCard
       sx={{
-        background: 'linear-gradient(135deg, #1a1a1a 0%, #424242 100%)',
+        background: '#000',
         color: '#fff',
         p: 3,
         borderRadius: 3,
         mb: 2,
+        border: 'none',
       }}
     >
-      <Typography variant="overline" sx={{ opacity: 0.8 }}>
+      <Typography variant="overline" sx={{ opacity: 0.7 }}>
         CARD NUMBER
       </Typography>
       <Typography variant="h6" sx={{ letterSpacing: 2, my: 1 }}>
@@ -28,16 +29,16 @@ const Card: React.FC<IProps> = ({ number, cvcNumber, validUntil, cardHolder }) =
       </Typography>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 3 }}>
         <Box>
-          <Typography variant="caption" sx={{ opacity: 0.8 }}>CARD HOLDER</Typography>
+          <Typography variant="caption" sx={{ opacity: 0.7 }}>CARD HOLDER</Typography>
           <Typography variant="body2">{cardHolder}</Typography>
         </Box>
         <Box sx={{ textAlign: 'right' }}>
-          <Typography variant="caption" sx={{ opacity: 0.8 }}>VALID UNTIL</Typography>
+          <Typography variant="caption" sx={{ opacity: 0.7 }}>VALID UNTIL</Typography>
           <Typography variant="body2">{validUntil}</Typography>
         </Box>
       </Box>
       <Box sx={{ mt: 2 }}>
-        <Typography variant="caption" sx={{ opacity: 0.8 }}>CVC</Typography>
+        <Typography variant="caption" sx={{ opacity: 0.7 }}>CVC</Typography>
         <Typography variant="body2">{cvcNumber}</Typography>
       </Box>
     </MuiCard>

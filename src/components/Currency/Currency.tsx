@@ -33,30 +33,31 @@ const Currency: React.FC<IProps> = ({
       cursor: 'pointer',
       borderColor: active ? 'primary.main' : 'divider',
       borderWidth: active ? 2 : 1,
-      bgcolor: active ? 'primary.main' : 'background.paper',
-      '&:hover': { bgcolor: active ? 'primary.dark' : 'action.hover' },
+      bgcolor: active ? 'grey.100' : 'background.paper',
+      '&:hover': { bgcolor: 'grey.50' },
     }}
   >
     <Box
       sx={{
         width: 48,
         height: 48,
-        borderRadius: '50%',
-        bgcolor: active ? 'primary.contrastText' : 'action.selected',
-        color: active ? 'primary.main' : 'text.secondary',
+        borderRadius: 3,
+        bgcolor: active ? 'primary.main' : 'grey.300',
+        color: active ? 'primary.contrastText' : 'text.secondary',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
         mr: 2,
+        fontSize: '1.25rem',
       }}
     >
       {children}
     </Box>
     <Box sx={{ flex: 1 }}>
-      <Typography variant="body1">{name}</Typography>
+      <Typography variant="body1" color="text.primary">{name}</Typography>
       <Typography variant="caption" color="text.secondary">{shortName}</Typography>
     </Box>
-    <Typography variant="body2" fontWeight="500">
+    <Typography variant="body2" fontWeight="500" color="text.primary">
       {aer}
     </Typography>
   </Paper>

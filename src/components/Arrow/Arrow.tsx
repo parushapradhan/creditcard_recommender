@@ -7,14 +7,14 @@ const Arrow: React.FC = () => (
       sx={{
         width: 48,
         height: 48,
-        borderRadius: '50%',
-        bgcolor: 'action.selected',
+        borderRadius: 3,
+        bgcolor: 'grey.200',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
       }}
     >
-      <ArrowDownwardIcon color="action" />
+      <ArrowDownwardIcon sx={{ color: 'text.secondary' }} />
     </Box>
   </Box>
 );

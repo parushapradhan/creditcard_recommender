@@ -1,4 +1,3 @@
-import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Paper from '@mui/material/Paper';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
@@ -15,7 +14,7 @@ const Balance: React.FC<IProps> = ({ balance, currency, currencySymbol }) => (
       Main - {currency}
       <ExpandMoreIcon fontSize="small" />
     </Typography>
-    <Typography variant="h4" fontWeight="bold" sx={{ mt: 1 }}>
+    <Typography variant="h4" fontWeight="bold" color="text.primary" sx={{ mt: 1 }}>
       {currencySymbol}{balance.toLocaleString()}
     </Typography>
   </Paper>

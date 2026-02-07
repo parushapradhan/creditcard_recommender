@@ -14,8 +14,8 @@ const Header: React.FC = () => {
   const inputRef = useRef<HTMLInputElement>(null);
 
   return (
-    <AppBar position="sticky" color="primary" elevation={0}>
-      <Toolbar sx={{ gap: 1 }}>
+    <AppBar position="sticky" elevation={0} sx={{ borderRadius: 0 }}>
+      <Toolbar sx={{ gap: 1, minHeight: 56, px: 1.5, pt: 'env(safe-area-inset-top)' }}>
         <IconButton component={RouterLink} to="/profile" color="inherit" sx={{ p: 0 }}>
           <Avatar
             src="/images/profile.jpg"
@@ -29,25 +29,30 @@ const Header: React.FC = () => {
             flex: 1,
             display: 'flex',
             alignItems: 'center',
-            bgcolor: 'rgba(255,255,255,0.15)',
-            borderRadius: 2,
+            bgcolor: 'rgba(255,255,255,0.12)',
+            borderRadius: 3,
             px: 1.5,
-            py: 0.5,
+            py: 1,
+            minHeight: 40,
           }}
         >
-          <SearchIcon sx={{ mr: 0.5, color: 'inherit' }} />
+          <SearchIcon sx={{ mr: 0.5, color: 'inherit', fontSize: 20 }} />
           <InputBase
             inputRef={inputRef}
             placeholder="Search"
             name="search"
             id="search"
-            sx={{ color: 'inherit', '& .MuiInputBase-input::placeholder': { opacity: 1 } }}
+            sx={{
+              color: 'inherit',
+              fontSize: '0.9375rem',
+              '& .MuiInputBase-input::placeholder': { opacity: 0.8 },
+            }}
           />
         </Box>
-        <IconButton component={RouterLink} to="/transactions" color="inherit">
+        <IconButton component={RouterLink} to="/transactions" color="inherit" aria-label="Transactions">
           <EqualizerIcon />
         </IconButton>
-        <IconButton component={RouterLink} to="/cards" color="inherit">
+        <IconButton component={RouterLink} to="/cards" color="inherit" aria-label="Cards">
           <CreditCardIcon />
         </IconButton>
       </Toolbar>

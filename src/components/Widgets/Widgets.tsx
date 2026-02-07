@@ -12,7 +12,7 @@ const widgets = [
 ];
 
 const Widgets: React.FC = () => (
-  <Box sx={{ display: 'flex', gap: 2, justifyContent: 'space-between', flexWrap: 'wrap' }}>
+  <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
     {widgets.map(({ to, icon, label }) => (
       <Button
         key={label}
@@ -20,7 +20,8 @@ const Widgets: React.FC = () => (
         to={to}
         variant="outlined"
         startIcon={icon}
-        sx={{ flex: 1, minWidth: 100 }}
+        fullWidth
+        sx={{ flex: '1 1 0', minWidth: 100 }}
       >
         {label}
       </Button>

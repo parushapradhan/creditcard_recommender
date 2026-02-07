@@ -18,7 +18,7 @@ const Card: React.FC<IProps> = ({ number, cvcNumber, validUntil, cardHolder }) =
         p: 3,
         borderRadius: 3,
         mb: 2,
-        border: 'none',
+        border: '1px solid #555',
         boxShadow: '0 4px 20px rgba(0,0,0,0.25), 0 8px 40px rgba(0,0,0,0.15)',
       }}
     >

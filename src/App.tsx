@@ -4,12 +4,12 @@ import Navigation from './navigation/Navigation';
 
 const theme = createTheme({
   palette: {
-    mode: 'light',
-    primary: { main: '#000000' },
-    secondary: { main: '#000000' },
-    background: { default: '#fafafa', paper: '#ffffff' },
-    text: { primary: '#000000', secondary: '#616161' },
-    divider: '#e0e0e0',
+    mode: 'dark',
+    primary: { main: '#ffffff' },
+    secondary: { main: '#b0b0b0' },
+    background: { default: '#121212', paper: '#1e1e1e' },
+    text: { primary: '#ffffff', secondary: '#b0b0b0' },
+    divider: '#333333',
   },
   shape: {
     borderRadius: 16,
@@ -36,7 +36,7 @@ const theme = createTheme({
       styleOverrides: {
         root: {
           borderRadius: 16,
-          border: '1px solid #e0e0e0',
+          border: '1px solid #333',
           boxShadow: 'none',
         },
       },
@@ -45,14 +45,14 @@ const theme = createTheme({
       styleOverrides: {
         root: { borderRadius: 12, minHeight: 48, fontSize: '1rem' },
         contained: {
-          backgroundColor: '#000',
-          color: '#fff',
-          '&:hover': { backgroundColor: '#333' },
+          backgroundColor: '#fff',
+          color: '#121212',
+          '&:hover': { backgroundColor: '#e0e0e0' },
         },
         outlined: {
-          borderColor: '#000',
-          color: '#000',
-          '&:hover': { borderColor: '#000', backgroundColor: 'rgba(0,0,0,0.04)' },
+          borderColor: '#666',
+          color: '#fff',
+          '&:hover': { borderColor: '#fff', backgroundColor: 'rgba(255,255,255,0.08)' },
         },
       },
     },
@@ -61,10 +61,10 @@ const theme = createTheme({
         root: {
           '& .MuiOutlinedInput-root': {
             borderRadius: 12,
-            backgroundColor: '#fff',
-            '& fieldset': { borderColor: '#e0e0e0' },
-            '&:hover fieldset': { borderColor: '#000' },
-            '&.Mui-focused fieldset': { borderWidth: 2, borderColor: '#000' },
+            backgroundColor: '#2a2a2a',
+            '& fieldset': { borderColor: '#444' },
+            '&:hover fieldset': { borderColor: '#888' },
+            '&.Mui-focused fieldset': { borderWidth: 2, borderColor: '#fff' },
           },
         },
       },
@@ -86,7 +86,7 @@ const theme = createTheme({
     MuiAppBar: {
       styleOverrides: {
         root: {
-          backgroundColor: '#000',
+          backgroundColor: '#1e1e1e',
           color: '#fff',
           boxShadow: 'none',
           borderBottom: '1px solid #333',

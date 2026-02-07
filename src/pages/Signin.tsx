@@ -22,7 +22,7 @@ const Signin: React.FC = () => {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        bgcolor: '#0f1012',
+        // bgcolor: '#0f1012',
         p: 2,
       }}
     >
@@ -32,10 +32,10 @@ const Signin: React.FC = () => {
           p: 3,
           maxWidth: 400,
           width: '100%',
-          border: '1px solid rgba(255,255,255,0.08)',
-          bgcolor: 'rgba(255,255,255,0.06)',
+          border: '0px solid rgba(255,255,255,0.08)',
+          bgcolor: 'transparent',
           backdropFilter: 'blur(12px)',
-          boxShadow: '0 8px 32px -8px rgba(0,0,0,0.25)',
+          boxShadow: '0',
         }}
       >
         <Typography variant="h4" gutterBottom color="text.primary" align="center">

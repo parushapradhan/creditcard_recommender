@@ -15,11 +15,18 @@ export interface ScannedCardData {
   cvcNumber: string;
 }
 
+const SKIP_WORDS = new Set([
+  'valid', 'thru', 'until', 'card', 'holder', 'visa', 'mastercard', 'amex', 'discover',
+  'debit', 'credit', 'bank', 'number', 'expires', 'expiry', 'valid thru', 'valid until',
+]);
+
 function parseCardText(text: string): Partial<ScannedCardData> {
   const out: Partial<ScannedCardData> = {};
-  const lines = text.split(/\r?\n/).map((s) => s.trim()).filter(Boolean);
+  const rawLines = text.split(/\r?\n/).map((s) => s.trim()).filter(Boolean);
+  const lines = rawLines.map((l) => l.replace(/\s+/g, ' ').trim()).filter(Boolean);
 
-  const digitLine = text.replace(/\s/g, '');
+  // Card number: take longest sequence of 13–19 digits (handles OCR spaces/dashes)
+  const digitLine = text.replace(/\s/g, '').replace(/-/g, '');
   const numberMatch = digitLine.match(/\d{13,19}/);
   if (numberMatch) {
     const raw = numberMatch[0];
@@ -27,21 +34,42 @@ function parseCardText(text: string): Partial<ScannedCardData> {
     out.number = grouped.length > 4 ? grouped : raw;
   }
 
-  const expiryMatch = text.match(/(\d{1,2})\s*\/?\s*(\d{2,4})/);
-  if (expiryMatch) {
-    let month = expiryMatch[1].padStart(2, '0');
-    let year = expiryMatch[2];
-    if (year.length === 4) year = year.slice(-2);
-    out.validUntil = `${month} / ${year}`;
-  }
-
-  for (let i = lines.length - 1; i >= 0; i--) {
-    const line = lines[i];
-    if (/^[A-Za-z\s\.\-']+$/.test(line) && line.length > 2 && !/^\d+$/.test(line)) {
-      out.cardHolder = line.toUpperCase();
-      break;
+  // Expiry: multiple patterns (MM/YY, MM-YY, MM YY, "VALID THRU 10/30", etc.)
+  const expiryPatterns = [
+    /(?:valid\s*thru|valid\s*until|expires?|expiry)\s*[:\s]*(\d{1,2})\s*[\/\-]\s*(\d{2,4})/i,
+    /(\d{1,2})\s*[\/\-]\s*(\d{2,4})/,
+    /(\d{1,2})\s+(\d{2,4})/,
+  ];
+  for (const re of expiryPatterns) {
+    const m = text.match(re);
+    if (m) {
+      let month = m[1].padStart(2, '0');
+      let year = m[2];
+      if (year.length === 4) year = year.slice(-2);
+      const monthNum = parseInt(month, 10);
+      if (monthNum >= 1 && monthNum <= 12) {
+        out.validUntil = `${month} / ${year}`;
+        break;
+      }
     }
   }
+
+  // Cardholder name: longest line that is mostly letters, not a skip word, 2+ chars
+  let bestName = '';
+  for (const line of lines) {
+    const clean = line.replace(/\s+/g, ' ').trim();
+    if (clean.length < 2) continue;
+    const lower = clean.toLowerCase();
+    if (SKIP_WORDS.has(lower) || SKIP_WORDS.has(clean.split(/\s+/)[0]?.toLowerCase() ?? '')) continue;
+    const letterCount = (clean.match(/[A-Za-z]/g) || []).length;
+    const otherCount = (clean.match(/[\s\-'.]/g) || []).length;
+    const digitCount = (clean.match(/\d/g) || []).length;
+    if (digitCount > letterCount) continue;
+    if (letterCount < clean.length * 0.5) continue;
+    if (!/^[\w\s\-'.]+$/.test(clean)) continue;
+    if (clean.length > bestName.length) bestName = clean;
+  }
+  if (bestName) out.cardHolder = bestName.toUpperCase().replace(/\s+/g, ' ');
 
   return out;
 }
@@ -195,23 +223,27 @@ const ScanCardDialog: React.FC<ScanCardDialogProps> = ({ open, onClose, onScanne
 
         scanningRef.current = true;
         setStatus('processing');
-        const canvas = document.createElement('canvas');
-        const scale = 0.6;
-        canvas.width = Math.floor(w * scale);
-        canvas.height = Math.floor(h * scale);
-        LOG('runOneScan: capturing frame', canvas.width, 'x', canvas.height);
-        const ctx = canvas.getContext('2d');
-        if (!ctx) {
+        const scale = 1.0;
+        const captureW = Math.floor(w * scale);
+        const captureH = Math.floor(h * scale);
+        const capture = document.createElement('canvas');
+        capture.width = captureW;
+        capture.height = captureH;
+        const captureCtx = capture.getContext('2d');
+        if (!captureCtx) {
           LOG('runOneScan: no canvas 2d context');
           setStatus('camera');
           scanningRef.current = false;
           return;
         }
-        ctx.drawImage(v, 0, 0, canvas.width, canvas.height);
-        canvas.toBlob(
-          async (blob) => {
-            if (!blob || !open) {
-              LOG('toBlob callback: no blob or dialog closed', !!blob, open);
+        captureCtx.drawImage(v, 0, 0, captureW, captureH);
+        const preprocess = document.createElement('canvas');
+        preprocess.width = captureW;
+        preprocess.height = captureH;
+        const preCtx = preprocess.getContext('2d');
+        const runOcr = (blob: Blob) => {
+          (async () => {
+            if (!open) {
               setStatus('camera');
               scanningRef.current = false;
               return;
@@ -225,6 +257,9 @@ const ScanCardDialog: React.FC<ScanCardDialogProps> = ({ open, onClose, onScanne
                 LOG('tesseract.js loaded, creating worker(eng)...');
                 worker = await Tesseract.createWorker('eng');
                 workerRef.current = worker;
+                try {
+                  await worker.setParameters({ tessedit_pageseg_mode: 6 });
+                } catch (_) {}
                 LOG('Tesseract worker created');
               }
               LOG('worker.recognize() started');
@@ -261,9 +296,35 @@ const ScanCardDialog: React.FC<ScanCardDialogProps> = ({ open, onClose, onScanne
             }
             setStatus('camera');
             scanningRef.current = false;
+          })();
+        };
+        if (!preCtx) {
+          capture.toBlob((blob) => {
+            if (!blob || !open) {
+              LOG('toBlob callback: no blob or dialog closed', !!blob, open);
+              setStatus('camera');
+              scanningRef.current = false;
+              return;
+            }
+            runOcr(blob);
+          }, 'image/jpeg', 0.9);
+          return;
+        }
+        preCtx.filter = 'contrast(1.35) grayscale(1)';
+        preCtx.drawImage(capture, 0, 0);
+        LOG('runOneScan: capturing frame (preprocessed)', captureW, 'x', captureH);
+        preprocess.toBlob(
+          (blob) => {
+            if (!blob || !open) {
+              LOG('toBlob callback: no blob or dialog closed', !!blob, open);
+              setStatus('camera');
+              scanningRef.current = false;
+              return;
+            }
+            runOcr(blob);
           },
           'image/jpeg',
-          0.85
+          0.9
         );
       };
 

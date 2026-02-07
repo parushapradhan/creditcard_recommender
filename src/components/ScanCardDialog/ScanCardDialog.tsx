@@ -19,7 +19,6 @@ function parseCardText(text: string): Partial<ScannedCardData> {
   const out: Partial<ScannedCardData> = {};
   const lines = text.split(/\r?\n/).map((s) => s.trim()).filter(Boolean);
 
-  // Card number: long digit string (possibly with spaces). 13–19 digits.
   const digitLine = text.replace(/\s/g, '');
   const numberMatch = digitLine.match(/\d{13,19}/);
   if (numberMatch) {
@@ -28,7 +27,6 @@ function parseCardText(text: string): Partial<ScannedCardData> {
     out.number = grouped.length > 4 ? grouped : raw;
   }
 
-  // Expiry: MM/YY or MM YY
   const expiryMatch = text.match(/(\d{1,2})\s*\/?\s*(\d{2,4})/);
   if (expiryMatch) {
     let month = expiryMatch[1].padStart(2, '0');
@@ -37,7 +35,6 @@ function parseCardText(text: string): Partial<ScannedCardData> {
     out.validUntil = `${month} / ${year}`;
   }
 
-  // Cardholder: line that is mostly letters (and spaces), often last
   for (let i = lines.length - 1; i >= 0; i--) {
     const line = lines[i];
     if (/^[A-Za-z\s\.\-']+$/.test(line) && line.length > 2 && !/^\d+$/.test(line)) {
@@ -49,6 +46,13 @@ function parseCardText(text: string): Partial<ScannedCardData> {
   return out;
 }
 
+function isValidCardNumber(num: string): boolean {
+  const digits = num.replace(/\s/g, '');
+  return digits.length >= 13 && digits.length <= 19 && /^\d+$/.test(digits);
+}
+
+const SCAN_INTERVAL_MS = 2500;
+
 interface ScanCardDialogProps {
   open: boolean;
   onClose: () => void;
@@ -58,93 +62,158 @@ interface ScanCardDialogProps {
 const ScanCardDialog: React.FC<ScanCardDialogProps> = ({ open, onClose, onScanned }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
-  const [status, setStatus] = useState<'camera' | 'captured' | 'processing' | 'error'>('camera');
+  const workerRef = useRef<{ terminate: () => Promise<void>; recognize: (blob: Blob) => Promise<{ data: { text: string } }> } | null>(null);
+  const scanningRef = useRef(false);
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  const [status, setStatus] = useState<'camera' | 'processing' | 'error'>('camera');
   const [errorMessage, setErrorMessage] = useState<string>('');
 
   const stopCamera = () => {
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+      intervalRef.current = null;
+    }
     if (streamRef.current) {
       streamRef.current.getTracks().forEach((t) => t.stop());
       streamRef.current = null;
     }
     if (videoRef.current) videoRef.current.srcObject = null;
+    scanningRef.current = false;
   };
+
+  const runOneScan = useRef<() => Promise<void>>(async () => {});
 
   useEffect(() => {
     if (!open) {
       stopCamera();
+      workerRef.current?.terminate().catch(() => {});
+      workerRef.current = null;
       setStatus('camera');
       setErrorMessage('');
       return;
     }
+
     let mounted = true;
     setStatus('camera');
-    navigator.mediaDevices
-      .getUserMedia({ video: { facingMode: 'environment' }, audio: false })
-      .then((stream) => {
-        if (!mounted || !videoRef.current) {
-          stream.getTracks().forEach((t) => t.stop());
-          return;
-        }
-        streamRef.current = stream;
-        videoRef.current.srcObject = stream;
-      })
-      .catch(() => {
-        if (mounted) {
-          setStatus('error');
-          setErrorMessage('Camera access denied or unavailable.');
-        }
-      });
+
+    const initCamera = () => {
+      navigator.mediaDevices
+        .getUserMedia({ video: { facingMode: 'environment' }, audio: false })
+        .then((stream) => {
+          if (!mounted || !videoRef.current) {
+            stream.getTracks().forEach((t) => t.stop());
+            return;
+          }
+          streamRef.current = stream;
+          videoRef.current.srcObject = stream;
+        })
+        .catch(() => {
+          if (mounted) {
+            setStatus('error');
+            setErrorMessage('Camera access denied or unavailable.');
+          }
+        });
+    };
+
+    initCamera();
+
     return () => {
       mounted = false;
       stopCamera();
     };
   }, [open]);
 
-  const handleCapture = async () => {
-    const video = videoRef.current;
-    if (!video || !streamRef.current) return;
-    stopCamera();
-    setStatus('processing');
+  useEffect(() => {
+    if (!open || status !== 'camera') return;
 
-    const canvas = document.createElement('canvas');
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
-    const ctx = canvas.getContext('2d');
-    if (!ctx) {
-      setStatus('error');
-      setErrorMessage('Could not capture image.');
-      return;
-    }
-    ctx.drawImage(video, 0, 0);
-    canvas.toBlob(async (blob) => {
-      if (!blob) {
-        setStatus('error');
-        setErrorMessage('Could not create image.');
-        return;
+    const video = videoRef.current;
+    if (!video) return;
+
+    const startAutoScan = () => {
+      if (intervalRef.current) return;
+
+      runOneScan.current = async () => {
+        if (scanningRef.current || !streamRef.current || !videoRef.current) return;
+        const v = videoRef.current;
+        if (v.readyState < 2 || v.videoWidth === 0) return;
+
+        scanningRef.current = true;
+        setStatus('processing');
+
+        const canvas = document.createElement('canvas');
+        const scale = 0.6;
+        canvas.width = Math.floor(v.videoWidth * scale);
+        canvas.height = Math.floor(v.videoHeight * scale);
+        const ctx = canvas.getContext('2d');
+        if (!ctx) {
+          setStatus('camera');
+          scanningRef.current = false;
+          return;
+        }
+        ctx.drawImage(v, 0, 0, canvas.width, canvas.height);
+        canvas.toBlob(
+          async (blob) => {
+            if (!blob || !open) {
+              setStatus('camera');
+              scanningRef.current = false;
+              return;
+            }
+            try {
+              let worker = workerRef.current;
+              if (!worker) {
+                const Tesseract = await import('tesseract.js').then((m) => m.default ?? m);
+                worker = await Tesseract.createWorker('eng');
+                workerRef.current = worker;
+              }
+              const { data } = await worker.recognize(blob);
+              const parsed = parseCardText(data.text || '');
+              if (parsed.number && isValidCardNumber(parsed.number)) {
+                stopCamera();
+                await workerRef.current?.terminate();
+                workerRef.current = null;
+                onScanned({
+                  number: parsed.number,
+                  validUntil: parsed.validUntil ?? '-- / --',
+                  cardHolder: parsed.cardHolder ?? 'CARDHOLDER',
+                  cvcNumber: '***',
+                });
+                onClose();
+                return;
+              }
+            } catch {
+              // ignore single-frame errors, keep scanning
+            }
+            setStatus('camera');
+            scanningRef.current = false;
+          },
+          'image/jpeg',
+          0.85
+        );
+      };
+
+      intervalRef.current = setInterval(() => {
+        runOneScan.current();
+      }, SCAN_INTERVAL_MS);
+    };
+
+    const onCanPlay = () => startAutoScan();
+    video.addEventListener('canplay', onCanPlay);
+    if (video.readyState >= 2) startAutoScan();
+
+    return () => {
+      video.removeEventListener('canplay', onCanPlay);
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
       }
-      try {
-        const Tesseract = await import('tesseract.js').then((m) => m.default ?? m);
-        const worker = await Tesseract.createWorker('eng');
-        const { data } = await worker.recognize(blob);
-        await worker.terminate();
-        const parsed = parseCardText(data.text);
-        const card: ScannedCardData = {
-          number: parsed.number ?? '**** **** **** ****',
-          validUntil: parsed.validUntil ?? '-- / --',
-          cardHolder: parsed.cardHolder ?? 'CARDHOLDER',
-          cvcNumber: '***',
-        };
-        onScanned(card);
-        onClose();
-      } catch {
-        setStatus('error');
-        setErrorMessage('Could not read card. Try again or add details manually.');
-      }
-    }, 'image/jpeg', 0.9);
-  };
+    };
+  }, [open, onScanned, onClose]);
 
   const handleClose = () => {
     stopCamera();
+    workerRef.current?.terminate().catch(() => {});
+    workerRef.current = null;
     onClose();
   };
 
@@ -157,7 +226,7 @@ const ScanCardDialog: React.FC<ScanCardDialogProps> = ({ open, onClose, onScanne
             {errorMessage}
           </Typography>
         )}
-        {status === 'camera' && (
+        {(status === 'camera' || status === 'processing') && (
           <Box
             sx={{
               position: 'relative',
@@ -175,24 +244,45 @@ const ScanCardDialog: React.FC<ScanCardDialogProps> = ({ open, onClose, onScanne
               muted
               style={{ width: '100%', height: '100%', objectFit: 'cover' }}
             />
-          </Box>
-        )}
-        {status === 'processing' && (
-          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', py: 4, gap: 2 }}>
-            <CircularProgress />
-            <Typography>Reading card...</Typography>
+            <Box
+              sx={{
+                position: 'absolute',
+                bottom: 0,
+                left: 0,
+                right: 0,
+                py: 1.5,
+                textAlign: 'center',
+                bgcolor: 'rgba(0,0,0,0.6)',
+                color: 'white',
+              }}
+            >
+              <Typography variant="body2">
+                {status === 'processing' ? 'Reading card...' : 'Position your card in the frame'}
+              </Typography>
+            </Box>
           </Box>
         )}
       </DialogContent>
       <DialogActions>
         <Button onClick={handleClose}>Cancel</Button>
-        {status === 'camera' && (
-          <Button variant="contained" onClick={handleCapture}>
-            Capture
-          </Button>
-        )}
         {status === 'error' && (
-          <Button variant="contained" onClick={() => setStatus('camera')}>
+          <Button
+            variant="contained"
+            onClick={() => {
+              stopCamera();
+              setStatus('camera');
+              setErrorMessage('');
+              navigator.mediaDevices
+                .getUserMedia({ video: { facingMode: 'environment' }, audio: false })
+                .then((stream) => {
+                  if (videoRef.current) {
+                    streamRef.current = stream;
+                    videoRef.current.srcObject = stream;
+                  }
+                })
+                .catch(() => setErrorMessage('Camera access denied or unavailable.'));
+            }}
+          >
             Try again
           </Button>
         )}

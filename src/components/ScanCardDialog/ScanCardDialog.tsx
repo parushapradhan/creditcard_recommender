@@ -51,7 +51,7 @@ function isValidCardNumber(num: string): boolean {
   return digits.length >= 13 && digits.length <= 19 && /^\d+$/.test(digits);
 }
 
-const SCAN_INTERVAL_MS = 2500;
+const SCAN_INTERVAL_MS = 2000;
 
 interface ScanCardDialogProps {
   open: boolean;
@@ -138,14 +138,19 @@ const ScanCardDialog: React.FC<ScanCardDialogProps> = ({ open, onClose, onScanne
       runOneScan.current = async () => {
         if (scanningRef.current || !streamRef.current || !videoRef.current) return;
         const v = videoRef.current;
-        if (v.readyState < 2 || v.videoWidth === 0) return;
+        if (v.readyState < 2) return;
+        const track = streamRef.current.getVideoTracks()[0];
+        const settings = track?.getSettings?.();
+        const w = v.videoWidth || settings?.width || 640;
+        const h = v.videoHeight || settings?.height || 480;
+        if (w < 100 || h < 100) return;
 
         scanningRef.current = true;
         setStatus('processing');
         const canvas = document.createElement('canvas');
         const scale = 0.6;
-        canvas.width = Math.floor(v.videoWidth * scale);
-        canvas.height = Math.floor(v.videoHeight * scale);
+        canvas.width = Math.floor(w * scale);
+        canvas.height = Math.floor(h * scale);
         const ctx = canvas.getContext('2d');
         if (!ctx) {
           setStatus('camera');
@@ -205,13 +210,19 @@ const ScanCardDialog: React.FC<ScanCardDialogProps> = ({ open, onClose, onScanne
     };
 
     const onCanPlay = () => startAutoScan();
+    const onLoadedData = () => startAutoScan();
     video.addEventListener('canplay', onCanPlay);
-    video.addEventListener('loadeddata', onCanPlay);
+    video.addEventListener('loadeddata', onLoadedData);
     if (video.readyState >= 2) startAutoScan();
 
+    const fallbackTimer = setTimeout(() => {
+      startAutoScan();
+    }, 1500);
+
     return () => {
+      clearTimeout(fallbackTimer);
       video.removeEventListener('canplay', onCanPlay);
-      video.removeEventListener('loadeddata', onCanPlay);
+      video.removeEventListener('loadeddata', onLoadedData);
       if (intervalRef.current) {
         clearInterval(intervalRef.current);
         intervalRef.current = null;

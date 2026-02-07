@@ -31,9 +31,10 @@ const BottomNav: React.FC = () => {
         right: 0,
         borderTop: '1px solid',
         borderColor: 'divider',
-        bgcolor: 'background.paper',
-        pb: 'env(safe-area-inset-bottom)',
+        bgcolor: '#2a2a2a',
         pt: 1,
+        pb: 'max(8px, env(safe-area-inset-bottom))',
+        minHeight: 56,
       }}
     >
       {navItems.map((item) => (

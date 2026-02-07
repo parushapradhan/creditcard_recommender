@@ -77,6 +77,7 @@ const Cards: React.FC = () => {
 
   return (
     <Layout>
+      <Box sx={{ pb: 6 }}>
       <Box
         sx={{
           display: 'flex',
@@ -172,10 +173,9 @@ const Cards: React.FC = () => {
       <Box
         component="form"
         onSubmit={(e) => e.preventDefault()}
-        className="frosted-blur"
         sx={{
           position: 'fixed',
-          bottom: 'calc(72px + env(safe-area-inset-bottom))',
+          bottom: 'calc(68px + env(safe-area-inset-bottom))',
           left: 'max(16px, env(safe-area-inset-left))',
           right: 'max(16px, env(safe-area-inset-right))',
           maxWidth: 448,
@@ -184,12 +184,15 @@ const Cards: React.FC = () => {
           zIndex: 30,
           display: 'flex',
           alignItems: 'center',
-          width: 'calc(100% - 32px)',
+          width: 'auto',
+          maxWidth: 448,
           px: 1.5,
           py: 1.5,
           borderRadius: 9999,
           border: '1px solid rgba(255,255,255,0.08)',
           boxShadow: '0 8px 24px -8px rgba(0,0,0,0.2)',
+          bgcolor: '#2a2a2a',
+          WebkitTapHighlightColor: 'transparent',
         }}
       >
         <IconButton sx={{ color: 'text.primary', ml: 0.5 }} aria-label="Add" size="small">
@@ -226,6 +229,7 @@ const Cards: React.FC = () => {
         >
           <GraphicEqIcon />
         </IconButton>
+      </Box>
       </Box>
     </Layout>
   );

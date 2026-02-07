@@ -27,7 +27,13 @@ const Layout: React.FC<IProps> = ({ children }) => (
         pb: 'max(12px, env(safe-area-inset-bottom))',
       }}
     >
-      <Box component="main" sx={{ pt: 2, pb: 10 }}>
+      <Box
+        component="main"
+        sx={{
+          pt: 'max(8px, env(safe-area-inset-top))',
+          pb: 'calc(88px + env(safe-area-inset-bottom))',
+        }}
+      >
         {children}
       </Box>
     </Container>

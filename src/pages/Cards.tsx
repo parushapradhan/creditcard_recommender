@@ -114,6 +114,13 @@ const Cards: React.FC = () => {
         MenuListProps={{ 'aria-labelledby': 'add-card-button' }}
         anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
         transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+        PaperProps={{
+          sx: {
+            bgcolor: '#2a2a2a',
+            border: '1px solid rgba(255,255,255,0.08)',
+            boxShadow: '0 8px 24px -8px rgba(0,0,0,0.2)',
+          },
+        }}
       >
         <MenuItem onClick={handleScanCard}>
           <ListItemIcon>
@@ -134,7 +141,7 @@ const Cards: React.FC = () => {
         onScanned={handleScanned}
       />
       <Divider />
-      <Box sx={{ width: '100%', py: 1 }}>
+      <Box sx={{ width: '100%', py: 1, pb: 11 }}>
         <Swiper
           modules={[Pagination]}
           spaceBetween={16}
@@ -167,10 +174,17 @@ const Cards: React.FC = () => {
         onSubmit={(e) => e.preventDefault()}
         className="frosted-blur"
         sx={{
+          position: 'fixed',
+          bottom: 'calc(72px + env(safe-area-inset-bottom))',
+          left: 'max(16px, env(safe-area-inset-left))',
+          right: 'max(16px, env(safe-area-inset-right))',
+          maxWidth: 448,
+          marginLeft: 'auto',
+          marginRight: 'auto',
+          zIndex: 30,
           display: 'flex',
           alignItems: 'center',
-          width: '100%',
-          mt: 2,
+          width: 'calc(100% - 32px)',
           px: 1.5,
           py: 1.5,
           borderRadius: 9999,
@@ -213,7 +227,6 @@ const Cards: React.FC = () => {
           <GraphicEqIcon />
         </IconButton>
       </Box>
-      <Divider />
     </Layout>
   );
 };

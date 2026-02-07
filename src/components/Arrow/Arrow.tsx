@@ -1,9 +1,22 @@
+import Box from '@mui/material/Box';
+import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
+
 const Arrow: React.FC = () => (
-  <div className='transfer-icon no-select'>
-    <div className='transfer-circle flex flex-v-center flex-h-center'>
-      <span className='material-symbols-outlined'>arrow_downward</span>
-    </div>
-  </div>
+  <Box sx={{ display: 'flex', justifyContent: 'center', py: 2 }}>
+    <Box
+      sx={{
+        width: 48,
+        height: 48,
+        borderRadius: '50%',
+        bgcolor: 'action.selected',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+      }}
+    >
+      <ArrowDownwardIcon color="action" />
+    </Box>
+  </Box>
 );
 
 export default Arrow;

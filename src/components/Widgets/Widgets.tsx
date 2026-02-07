@@ -1,20 +1,31 @@
-import { Link } from 'react-router-dom';
+import { Link as RouterLink } from 'react-router-dom';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import SyncAltIcon from '@mui/icons-material/SyncAlt';
+import CreditCardIcon from '@mui/icons-material/CreditCard';
+import SavingsIcon from '@mui/icons-material/Savings';
+
+const widgets = [
+  { to: '/transactions', icon: <SyncAltIcon />, label: 'Transactions' },
+  { to: '/cards', icon: <CreditCardIcon />, label: 'Cards' },
+  { to: '/savings', icon: <SavingsIcon />, label: 'Savings' },
+];
 
 const Widgets: React.FC = () => (
-  <div className='widgets flex flex-v-center flex-space-between'>
-    <Link to='/transactions' className='widget no-select flex flex-col flex-v-center flex-h-center'>
-      <span className='material-symbols-outlined'>sync_alt</span>
-      <p>Transactions</p>
-    </Link>
-    <Link to='/cards' className='widget no-select flex flex-col flex-v-center flex-h-center'>
-      <span className='material-symbols-outlined'>credit_card</span>
-      <p>Cards</p>
-    </Link>
-    <Link to='/savings' className='widget no-select flex flex-col flex-v-center flex-h-center'>
-      <span className='material-symbols-outlined'>savings</span>
-      <p>Savings</p>
-    </Link>
-  </div>
+  <Box sx={{ display: 'flex', gap: 2, justifyContent: 'space-between', flexWrap: 'wrap' }}>
+    {widgets.map(({ to, icon, label }) => (
+      <Button
+        key={label}
+        component={RouterLink}
+        to={to}
+        variant="outlined"
+        startIcon={icon}
+        sx={{ flex: 1, minWidth: 100 }}
+      >
+        {label}
+      </Button>
+    ))}
+  </Box>
 );
 
 export default Widgets;

@@ -1,78 +1,76 @@
-import { Link, useNavigate } from 'react-router-dom';
-
-// components
-import Input from '../components/Form/Input';
-import Button from '../components/Form/Button';
+import { Link as RouterLink, useNavigate } from 'react-router-dom';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import TextField from '@mui/material/TextField';
+import Typography from '@mui/material/Typography';
+import Link from '@mui/material/Link';
+import Paper from '@mui/material/Paper';
 
 const Signin: React.FC = () => {
   const navigate = useNavigate();
 
-  /**
-   * Handles the form submission event by preventing the default behavior and navigating to the home page.
-   *
-   * @param {React.FormEvent} e - The form submission event.
-   */
-  const handleSubmit = (e: React.FormEvent): void => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-
     navigate('/home', { replace: true });
   };
 
   return (
-    <div className='flex flex-v-center flex-h-center h-full'>
-      <div className='bg' />
-      <div className='text'>
-        <h1 className='text-shadow'>Hello! 👋</h1>
-        <p className='text-shadow'>Please sign in to your account or sign up a new account.</p>
-
-        <form method='post' action='/' className='form' noValidate onSubmit={handleSubmit}>
-          <div className='form-line'>
-            <div className='label-line'>
-              <label htmlFor='email' className='text-shadow'>
-                Email
-              </label>
-            </div>
-            <Input
-              required
-              tabIndex={0}
-              name='email'
-              type='email'
-              autoComplete={false}
-              placeholder='Please enter your email'
-            />
-          </div>
-          <div className='form-line'>
-            <div className='label-line flex flex-h-center flex-space-between'>
-              <label htmlFor='password' className='text-shadow'>
-                Password
-              </label>
-              <Link to='/' className='text-shadow'>
-                Forgot password?
-              </Link>
-            </div>
-            <Input
-              required
-              tabIndex={0}
-              name='password'
-              type='password'
-              autoComplete={false}
-              placeholder='Please enter your password'
-            />
-          </div>
-          <div className='form-line'>
-            <Button type='submit' text='Sign in' tabIndex={0} />
-          </div>
-        </form>
-
-        <div className='links'>
-          <a href='/' className='text-shadow'>
+    <Box
+      sx={{
+        minHeight: '100vh',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        bgcolor: 'primary.main',
+        p: 2,
+      }}
+    >
+      <Paper elevation={3} sx={{ p: 4, maxWidth: 400, width: '100%' }}>
+        <Typography variant="h4" gutterBottom>
+          Hello! 👋
+        </Typography>
+        <Typography color="text.secondary" sx={{ mb: 3 }}>
+          Please sign in to your account or sign up a new account.
+        </Typography>
+        <Box component="form" onSubmit={handleSubmit} noValidate>
+          <TextField
+            margin="normal"
+            required
+            fullWidth
+            id="email"
+            label="Email"
+            name="email"
+            type="email"
+            autoComplete="email"
+            autoFocus
+          />
+          <TextField
+            margin="normal"
+            required
+            fullWidth
+            name="password"
+            label="Password"
+            type="password"
+            id="password"
+            autoComplete="current-password"
+          />
+          <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 1 }}>
+            <Link component={RouterLink} to="/" variant="body2">
+              Forgot password?
+            </Link>
+          </Box>
+          <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }}>
+            Sign in
+          </Button>
+        </Box>
+        <Typography variant="body2" color="text.secondary" align="center">
+          <Link component={RouterLink} to="/">
             Click here
-          </a>
-          &nbsp;
-          <span className='text-shadow'>if you don&apos;t have an account</span>
-        </div>
-      </div>
-    </div>
+          </Link>
+          {' if you don\'t have an account'}
+        </Typography>
+      </Paper>
+    </Box>
   );
 };
 

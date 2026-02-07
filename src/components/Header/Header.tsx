@@ -1,42 +1,57 @@
 import { useRef } from 'react';
-
-import { Link } from 'react-router-dom';
+import { Link as RouterLink } from 'react-router-dom';
+import AppBar from '@mui/material/AppBar';
+import Toolbar from '@mui/material/Toolbar';
+import IconButton from '@mui/material/IconButton';
+import Avatar from '@mui/material/Avatar';
+import InputBase from '@mui/material/InputBase';
+import Box from '@mui/material/Box';
+import SearchIcon from '@mui/icons-material/Search';
+import EqualizerIcon from '@mui/icons-material/Equalizer';
+import CreditCardIcon from '@mui/icons-material/CreditCard';
 
 const Header: React.FC = () => {
   const inputRef = useRef<HTMLInputElement>(null);
 
   return (
-    <header className='flex flex-v-center flex-space-between'>
-      <div className='header-profile flex flex-1'>
-        <Link to='/profile'>
-          <div className='profile-photo' style={{ backgroundImage: 'url("images/profile.jpg")' }} />
-        </Link>
-      </div>
-      <div className='header-center'>
-        <div className='header-search flex flex-v-center'>
-          <span
-            tabIndex={0}
-            role='button'
-            onKeyDown={() => {}}
-            onClick={() => {
-              inputRef.current?.focus();
-            }}
-            className='material-symbols-outlined no-select'
-          >
-            search
-          </span>
-          <input ref={inputRef} type='text' name='search' id='search' placeholder='Search' />
-        </div>
-      </div>
-      <div className='header-buttons flex flex-1 flex-v-center flex-end'>
-        <Link to='/transactions' className='header-button flex flex-v-center flex-h-center'>
-          <span className='material-symbols-outlined'>equalizer</span>
-        </Link>
-        <Link to='/cards' className='header-button flex flex-v-center flex-h-center'>
-          <span className='material-symbols-outlined'>credit_card</span>
-        </Link>
-      </div>
-    </header>
+    <AppBar position="sticky" color="primary" elevation={0}>
+      <Toolbar sx={{ gap: 1 }}>
+        <IconButton component={RouterLink} to="/profile" color="inherit" sx={{ p: 0 }}>
+          <Avatar
+            src="/images/profile.jpg"
+            alt="Profile"
+            sx={{ width: 40, height: 40 }}
+          />
+        </IconButton>
+        <Box
+          onClick={() => inputRef.current?.focus()}
+          sx={{
+            flex: 1,
+            display: 'flex',
+            alignItems: 'center',
+            bgcolor: 'rgba(255,255,255,0.15)',
+            borderRadius: 2,
+            px: 1.5,
+            py: 0.5,
+          }}
+        >
+          <SearchIcon sx={{ mr: 0.5, color: 'inherit' }} />
+          <InputBase
+            inputRef={inputRef}
+            placeholder="Search"
+            name="search"
+            id="search"
+            sx={{ color: 'inherit', '& .MuiInputBase-input::placeholder': { opacity: 1 } }}
+          />
+        </Box>
+        <IconButton component={RouterLink} to="/transactions" color="inherit">
+          <EqualizerIcon />
+        </IconButton>
+        <IconButton component={RouterLink} to="/cards" color="inherit">
+          <CreditCardIcon />
+        </IconButton>
+      </Toolbar>
+    </AppBar>
   );
 };
 

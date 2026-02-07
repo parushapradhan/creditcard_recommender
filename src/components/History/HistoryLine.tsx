@@ -1,7 +1,7 @@
-// components
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
 import Circle from '../Circle/Circle';
 
-// interfaces
 interface IData {
   id: number;
   icon: string;
@@ -17,21 +17,28 @@ interface IProps {
 }
 
 const HistoryLine: React.FC<IProps> = ({ item }) => (
-  <div className='history-line flex flex-h-center flex-v-center'>
-    <div className='history-line-icon flex flex-1'>
+  <Box
+    sx={{
+      display: 'flex',
+      alignItems: 'center',
+      py: 1.5,
+      px: 1,
+      '&:not(:last-child)': { borderBottom: 1, borderColor: 'divider' },
+    }}
+  >
+    <Box sx={{ mr: 2 }}>
       <Circle color={item.color} icon={item.icon} />
-    </div>
-    <div className='history-line-details flex flex-col'>
-      <span className='name'>{item.name}</span>
-      <span className='time'>{item.time}</span>
-    </div>
-    <div className='history-line-amount flex flex-1 flex-end'>
-      <p>
-        - {item.currencySymbol}
-        {item.amount}
-      </p>
-    </div>
-  </div>
+    </Box>
+    <Box sx={{ flex: 1 }}>
+      <Typography variant="body1">{item.name}</Typography>
+      <Typography variant="caption" color="text.secondary">
+        {item.time}
+      </Typography>
+    </Box>
+    <Typography variant="body2" color="text.secondary">
+      - {item.currencySymbol}{item.amount}
+    </Typography>
+  </Box>
 );
 
 export default HistoryLine;

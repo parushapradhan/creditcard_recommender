@@ -1,28 +1,43 @@
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
+import TextField from '@mui/material/TextField';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+
 const Destination: React.FC = () => (
-  <div className='accounts flex flex-v-center flex-space-between'>
-    <div className='account-balance flex flex-col'>
-      <div className='flex flex-v-center no-select pointer'>
-        <span>EURO</span>
-        <span className='material-symbols-outlined'>keyboard_arrow_down</span>
-      </div>
-      <span className='account-balance-bottom'>Balance: € 231.40</span>
-    </div>
-    <div className='account-money flex flex-col right'>
-      <div className='flex flex-v-center flex-end'>
-        <span>€</span>
-        <input
-          tabIndex={0}
-          className='account-balance-input right'
-          value='0'
-          type='text'
-          placeholder='0'
-          autoComplete='off'
-          onChange={() => {}}
-        />
-      </div>
-      <span className='account-balance-bottom'>No fee</span>
-    </div>
-  </div>
+  <Box
+    sx={{
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      gap: 2,
+      p: 2,
+      border: 1,
+      borderColor: 'divider',
+      borderRadius: 2,
+    }}
+  >
+    <Box>
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+        <Typography variant="body1">EURO</Typography>
+        <ExpandMoreIcon fontSize="small" />
+      </Box>
+      <Typography variant="caption" color="text.secondary">
+        Balance: € 231.40
+      </Typography>
+    </Box>
+    <Box sx={{ textAlign: 'right' }}>
+      <TextField
+        size="small"
+        placeholder="0"
+        defaultValue="0"
+        inputProps={{ style: { textAlign: 'right' } }}
+        sx={{ width: 120 }}
+      />
+      <Typography variant="caption" color="text.secondary" display="block">
+        No fee
+      </Typography>
+    </Box>
+  </Box>
 );
 
 export default Destination;

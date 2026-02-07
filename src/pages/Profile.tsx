@@ -1,91 +1,106 @@
-import { Link } from 'react-router-dom';
-
-// components
+import { Link as RouterLink } from 'react-router-dom';
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
+import Avatar from '@mui/material/Avatar';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import ListItemText from '@mui/material/ListItemText';
+import ListItemButton from '@mui/material/ListItemButton';
 import Layout from '../components/Layout/Layout';
 import Divider from '../components/Divider/Divider';
+import SupportIcon from '@mui/icons-material/Support';
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import SchoolIcon from '@mui/icons-material/School';
+import InboxIcon from '@mui/icons-material/Inbox';
+import VerifiedUserIcon from '@mui/icons-material/VerifiedUser';
+import NotificationsIcon from '@mui/icons-material/Notifications';
+import ContrastIcon from '@mui/icons-material/Contrast';
+import StarIcon from '@mui/icons-material/Star';
+import InfoIcon from '@mui/icons-material/Info';
+import PowerSettingsNewIcon from '@mui/icons-material/PowerSettingsNew';
+import QrCode2Icon from '@mui/icons-material/QrCode2';
+
+const profileLinks1 = [
+  { icon: <SupportIcon />, label: 'Help' },
+  { icon: <AccountCircleIcon />, label: 'Account' },
+  { icon: <SchoolIcon />, label: 'Learn' },
+  { icon: <InboxIcon />, label: 'Inbox', badge: 4 },
+];
+const profileLinks2 = [
+  { icon: <VerifiedUserIcon />, label: 'Security & privacy' },
+  { icon: <NotificationsIcon />, label: 'Notification settings' },
+  { icon: <ContrastIcon />, label: 'Appearance' },
+  { icon: <StarIcon />, label: 'New features' },
+];
+const profileLinks3 = [
+  { icon: <InfoIcon />, label: 'About us' },
+  { icon: <PowerSettingsNewIcon />, label: 'Sign out' },
+];
 
 const Profile: React.FC = () => (
   <Layout>
     <Divider />
-
-    <h1 className='title'>Profile</h1>
-
-    <div className='account-photo' style={{ backgroundImage: `url("images/profile.jpg")` }} />
-
-    <div className='center'>
-      <h2>Cenk SARI</h2>
-      <p className='flex flex-v-center flex-h-center'>
-        @cenksari &nbsp;
-        <span className='material-symbols-outlined'>qr_code</span>
-      </p>
-    </div>
-
+    <Typography variant="h5" fontWeight="600" sx={{ mb: 2 }}>
+      Profile
+    </Typography>
+    <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', mb: 3 }}>
+      <Avatar
+        src="/images/profile.jpg"
+        sx={{ width: 80, height: 80, mb: 1 }}
+      />
+      <Typography variant="h6">Cenk SARI</Typography>
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+        <Typography variant="body2" color="text.secondary">
+          @cenksari
+        </Typography>
+        <QrCode2Icon fontSize="small" color="action" />
+      </Box>
+    </Box>
     <Divider />
-
-    <div className='account'>
-      <Link to='/profile' className='flex flex-v-center'>
-        <span className='material-symbols-outlined'>support</span>
-        Help
-      </Link>
-      <Link to='/profile' className='flex flex-v-center'>
-        <span className='material-symbols-outlined'>account_circle</span>
-        Account
-      </Link>
-      <Link to='/profile' className='flex flex-v-center'>
-        <span className='material-symbols-outlined'>school</span>
-        Learn
-      </Link>
-      <Link to='/profile' className='flex flex-v-center flex-space-between'>
-        <div className='flex flex-v-center flex-h-center'>
-          <span className='material-symbols-outlined'>inbox</span>
-          Inbox
-        </div>
-        <span className='notification flex flex-v-center flex-h-center'>4</span>
-      </Link>
-    </div>
-
+    <List disablePadding>
+      {profileLinks1.map(({ icon, label, badge }) => (
+        <ListItem key={label} disablePadding>
+          <ListItemButton component={RouterLink} to="/profile">
+            <ListItemIcon>{icon}</ListItemIcon>
+            <ListItemText primary={label} />
+            {badge != null && (
+              <Typography variant="caption" sx={{ bgcolor: 'primary.main', color: 'primary.contrastText', px: 1, borderRadius: 1 }}>
+                {badge}
+              </Typography>
+            )}
+          </ListItemButton>
+        </ListItem>
+      ))}
+    </List>
     <Divider />
-
-    <div className='account'>
-      <Link to='/profile' className='flex flex-v-center'>
-        <span className='material-symbols-outlined'>verified_user</span>
-        Security &amp; privacy
-      </Link>
-      <Link to='/profile' className='flex flex-v-center'>
-        <span className='material-symbols-outlined'>notifications</span>
-        Notification settings
-      </Link>
-      <Link to='/profile' className='flex flex-v-center'>
-        <span className='material-symbols-outlined'>contrast</span>
-        Appearance
-      </Link>
-      <Link to='/profile' className='flex flex-v-center'>
-        <span className='material-symbols-outlined'>grade</span>
-        New features
-      </Link>
-    </div>
-
+    <List disablePadding>
+      {profileLinks2.map(({ icon, label }) => (
+        <ListItem key={label} disablePadding>
+          <ListItemButton component={RouterLink} to="/profile">
+            <ListItemIcon>{icon}</ListItemIcon>
+            <ListItemText primary={label} />
+          </ListItemButton>
+        </ListItem>
+      ))}
+    </List>
     <Divider />
-
-    <div className='account'>
-      <Link to='/profile' className='flex flex-v-center'>
-        <span className='material-symbols-outlined'>token</span>
-        About us
-      </Link>
-      <Link to='/profile' className='flex flex-v-center'>
-        <span className='material-symbols-outlined'>power_settings_new</span>
-        Sign out
-      </Link>
-    </div>
-
+    <List disablePadding>
+      {profileLinks3.map(({ icon, label }) => (
+        <ListItem key={label} disablePadding>
+          <ListItemButton component={RouterLink} to="/profile">
+            <ListItemIcon>{icon}</ListItemIcon>
+            <ListItemText primary={label} />
+          </ListItemButton>
+        </ListItem>
+      ))}
+    </List>
     <Divider />
-
-    <footer className='center no-select'>
+    <Typography variant="caption" color="text.secondary" align="center" display="block">
       v.1.0.12
       <br />
       Banking Ltd.
-    </footer>
-
+    </Typography>
     <Divider />
   </Layout>
 );

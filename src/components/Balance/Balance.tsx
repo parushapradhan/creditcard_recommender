@@ -1,4 +1,8 @@
-// interfaces
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
+import Paper from '@mui/material/Paper';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+
 interface IProps {
   balance: number;
   currency: string;
@@ -6,16 +10,15 @@ interface IProps {
 }
 
 const Balance: React.FC<IProps> = ({ balance, currency, currencySymbol }) => (
-  <div className='balance flex flex-col flex-v-center flex-h-center'>
-    <p className='currency text-shadow no-select flex flex-v-center flex-h-center'>
+  <Paper variant="outlined" sx={{ p: 3, textAlign: 'center' }}>
+    <Typography variant="body2" color="text.secondary" sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 0.5 }}>
       Main - {currency}
-      <span className='material-symbols-outlined'>keyboard_arrow_down</span>
-    </p>
-    <h1 className='text-shadow no-select flex flex-h-center flex-v-center'>
-      <span>{currencySymbol}</span>
-      {balance}
-    </h1>
-  </div>
+      <ExpandMoreIcon fontSize="small" />
+    </Typography>
+    <Typography variant="h4" fontWeight="bold" sx={{ mt: 1 }}>
+      {currencySymbol}{balance.toLocaleString()}
+    </Typography>
+  </Paper>
 );
 
 export default Balance;

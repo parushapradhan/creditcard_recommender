@@ -23,9 +23,9 @@ const historyItems = [
 ];
 
 const History: React.FC<IProps> = ({ date, detailed = false, dateBalance }) => (
-  <Paper variant="outlined" sx={{ overflow: 'hidden' }}>
+  <Paper variant="outlined" sx={{ overflow: 'hidden', border: '1px solid rgba(255,255,255,0.08)', boxShadow: '0 8px 32px -8px rgba(0,0,0,0.25)' }}>
     {detailed && date && (
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', px: 2, py: 1.5, bgcolor: 'grey.100' }}>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', px: 2, py: 1.5, bgcolor: 'rgba(255,255,255,0.05)' }}>
         <Typography variant="body2" color="text.secondary">{date}</Typography>
         <Typography variant="body2" color="text.secondary">{dateBalance}</Typography>
       </Box>

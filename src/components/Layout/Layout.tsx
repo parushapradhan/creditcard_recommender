@@ -11,7 +11,7 @@ const Layout: React.FC<IProps> = ({ children }) => (
     sx={{
       minHeight: '100dvh',
       minHeight: '100vh',
-      bgcolor: 'background.default',
+      bgcolor: '#0f1012',
       px: 0,
       pt: 0,
     }}

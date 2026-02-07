@@ -252,8 +252,9 @@ const ScanCardDialog: React.FC<ScanCardDialogProps> = ({ open, onClose, onScanne
               position: 'relative',
               width: '100%',
               aspectRatio: '16/10',
-              bgcolor: 'grey.900',
-              borderRadius: 2,
+              bgcolor: 'rgba(0,0,0,0.4)',
+              borderRadius: 3,
+              border: '1px solid rgba(255,255,255,0.08)',
               overflow: 'hidden',
             }}
           >
@@ -272,7 +273,8 @@ const ScanCardDialog: React.FC<ScanCardDialogProps> = ({ open, onClose, onScanne
                 right: 0,
                 py: 1.5,
                 textAlign: 'center',
-                bgcolor: 'rgba(0,0,0,0.6)',
+                bgcolor: 'rgba(0,0,0,0.5)',
+                backdropFilter: 'blur(8px)',
                 color: 'white',
               }}
             >

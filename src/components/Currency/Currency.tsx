@@ -31,18 +31,17 @@ const Currency: React.FC<IProps> = ({
       p: 2,
       mb: 1,
       cursor: 'pointer',
-      borderColor: active ? 'primary.main' : 'divider',
-      borderWidth: active ? 2 : 1,
-      bgcolor: active ? 'grey.100' : 'background.paper',
-      '&:hover': { bgcolor: 'grey.50' },
+      border: active ? '2px solid #6366f1' : '1px solid rgba(255,255,255,0.08)',
+      bgcolor: active ? 'rgba(99,102,241,0.12)' : 'rgba(255,255,255,0.06)',
+      '&:hover': { bgcolor: active ? 'rgba(99,102,241,0.15)' : 'rgba(255,255,255,0.08)' },
     }}
   >
     <Box
       sx={{
         width: 48,
         height: 48,
-        borderRadius: 3,
-        bgcolor: active ? 'primary.main' : 'grey.300',
+        borderRadius: 2,
+        bgcolor: active ? 'primary.main' : 'rgba(255,255,255,0.1)',
         color: active ? 'primary.contrastText' : 'text.secondary',
         display: 'flex',
         alignItems: 'center',

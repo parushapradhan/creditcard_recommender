@@ -22,11 +22,22 @@ const Signin: React.FC = () => {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        bgcolor: '#fafafa',
+        bgcolor: '#0f1012',
         p: 2,
       }}
     >
-      <Paper elevation={0} sx={{ p: 3, maxWidth: 400, width: '100%' }}>
+      <Paper
+        elevation={0}
+        sx={{
+          p: 3,
+          maxWidth: 400,
+          width: '100%',
+          border: '1px solid rgba(255,255,255,0.08)',
+          bgcolor: 'rgba(255,255,255,0.06)',
+          backdropFilter: 'blur(12px)',
+          boxShadow: '0 8px 32px -8px rgba(0,0,0,0.25)',
+        }}
+      >
         <Typography variant="h4" gutterBottom color="text.primary">
           Hello! 👋
         </Typography>

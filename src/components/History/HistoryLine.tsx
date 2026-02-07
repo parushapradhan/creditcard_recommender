@@ -24,7 +24,7 @@ const HistoryLine: React.FC<IProps> = ({ item }) => (
       py: 1.5,
       px: 2,
       minHeight: 56,
-      '&:not(:last-child)': { borderBottom: 1, borderColor: 'divider' },
+      '&:not(:last-child)': { borderBottom: '1px solid rgba(255,255,255,0.08)' },
     }}
   >
     <Box sx={{ mr: 2 }}>

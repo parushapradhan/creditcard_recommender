@@ -22,16 +22,21 @@ const Actions: React.FC = () => (
           component={to ? RouterLink : 'button'}
           to={to}
           sx={{
-            bgcolor: 'primary.main',
-            color: 'primary.contrastText',
+            background: 'linear-gradient(to right, #6366f1, #a855f7)',
+            color: '#fff',
             width: 56,
             height: 56,
-            '&:hover': { bgcolor: '#333' },
+            boxShadow: '0 0 24px -4px rgba(99,102,241,0.4)',
+            '&:hover': {
+              background: 'linear-gradient(to right, #6366f1, #a855f7)',
+              boxShadow: '0 0 32px -4px rgba(99,102,241,0.5)',
+              filter: 'brightness(1.1)',
+            },
           }}
         >
           {icon}
         </IconButton>
-        <Typography variant="caption" color="text.secondary" sx={{ mt: 0.5 }}>
+        <Typography variant="caption" color="text.secondary" sx={{ mt: 0.5, opacity: 0.7 }}>
           {label}
         </Typography>
       </Box>

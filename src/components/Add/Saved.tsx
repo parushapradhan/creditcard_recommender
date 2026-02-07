@@ -10,9 +10,10 @@ const Saved: React.FC = () => (
       alignItems: 'center',
       gap: 2,
       p: 2,
-      border: '1px solid',
-      borderColor: 'divider',
+      border: '1px solid rgba(255,255,255,0.08)',
       borderRadius: 3,
+      bgcolor: 'rgba(255,255,255,0.06)',
+      boxShadow: '0 8px 32px -8px rgba(0,0,0,0.25)',
     }}
   >
     <Box
@@ -20,7 +21,8 @@ const Saved: React.FC = () => (
         width: 56,
         height: 56,
         borderRadius: 2,
-        bgcolor: 'primary.main',
+        background: 'linear-gradient(to right, #6366f1, #a855f7)',
+        color: '#fff',
         color: 'primary.contrastText',
         display: 'flex',
         alignItems: 'center',

@@ -95,11 +95,12 @@ const Cards: React.FC = () => {
           aria-haspopup="true"
           aria-expanded={open ? 'true' : undefined}
           sx={{
-            border: '2px solid',
-            borderColor: 'divider',
+            border: '1px solid rgba(255,255,255,0.1)',
             borderRadius: '50%',
             width: 44,
             height: 44,
+            bgcolor: 'rgba(255,255,255,0.05)',
+            '&:hover': { bgcolor: 'rgba(255,255,255,0.1)' },
           }}
         >
           <AddIcon />
@@ -162,21 +163,22 @@ const Cards: React.FC = () => {
         </Swiper>
       </Box>
       <Box
+        component="form"
+        onSubmit={(e) => e.preventDefault()}
+        className="frosted-blur"
         sx={{
           display: 'flex',
           alignItems: 'center',
           width: '100%',
           mt: 2,
-          px: 0,
-          py: 1,
-          bgcolor: 'grey.800',
+          px: 1.5,
+          py: 1.5,
           borderRadius: 9999,
-          border: 'none',
+          border: '1px solid rgba(255,255,255,0.08)',
+          boxShadow: '0 8px 24px -8px rgba(0,0,0,0.2)',
         }}
-        component="form"
-        onSubmit={(e) => e.preventDefault()}
       >
-        <IconButton sx={{ color: 'white', ml: 0.5 }} aria-label="Add">
+        <IconButton sx={{ color: 'text.primary', ml: 0.5 }} aria-label="Add" size="small">
           <AddIcon />
         </IconButton>
         <Box
@@ -187,22 +189,24 @@ const Cards: React.FC = () => {
             flex: 1,
             border: 'none',
             background: 'transparent',
-            color: 'white',
+            color: 'text.primary',
             fontSize: '1rem',
             py: 1.25,
-            '&::placeholder': { color: 'grey.500' },
+            px: 1,
+            '&::placeholder': { color: 'text.secondary', opacity: 0.8 },
             '&:focus': { outline: 'none' },
           }}
         />
-        <IconButton sx={{ color: 'white' }} aria-label="Voice input">
+        <IconButton sx={{ color: 'text.primary' }} aria-label="Voice input" size="small">
           <MicIcon />
         </IconButton>
         <IconButton
+          size="small"
           sx={{
-            color: 'black',
-            bgcolor: 'white',
-            mr: 0.5,
-            '&:hover': { bgcolor: 'grey.200' },
+            color: 'primary.contrastText',
+            background: 'linear-gradient(to right, #6366f1, #a855f7)',
+            boxShadow: '0 0 20px -4px rgba(99,102,241,0.4)',
+            '&:hover': { filter: 'brightness(1.1)', background: 'linear-gradient(to right, #6366f1, #a855f7)' },
           }}
           aria-label="Send"
         >

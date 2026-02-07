@@ -11,9 +11,10 @@ const Destination: React.FC = () => (
       justifyContent: 'space-between',
       gap: 2,
       p: 2,
-      border: '1px solid',
-      borderColor: 'divider',
+      border: '1px solid rgba(255,255,255,0.08)',
       borderRadius: 3,
+      bgcolor: 'rgba(255,255,255,0.06)',
+      boxShadow: '0 8px 32px -8px rgba(0,0,0,0.25)',
     }}
   >
     <Box>

@@ -52,6 +52,7 @@ function isValidCardNumber(num: string): boolean {
 }
 
 const SCAN_INTERVAL_MS = 2000;
+const LOG = (msg: string, ...args: unknown[]) => console.log('[ScanCard]', msg, ...args);
 
 interface ScanCardDialogProps {
   open: boolean;
@@ -68,8 +69,10 @@ const ScanCardDialog: React.FC<ScanCardDialogProps> = ({ open, onClose, onScanne
 
   const [status, setStatus] = useState<'camera' | 'processing' | 'error'>('camera');
   const [errorMessage, setErrorMessage] = useState<string>('');
+  const [streamReady, setStreamReady] = useState(false);
 
   const stopCamera = () => {
+    LOG('stopCamera called');
     if (intervalRef.current) {
       clearInterval(intervalRef.current);
       intervalRef.current = null;
@@ -85,7 +88,9 @@ const ScanCardDialog: React.FC<ScanCardDialogProps> = ({ open, onClose, onScanne
   const runOneScan = useRef<() => Promise<void>>(async () => {});
 
   useEffect(() => {
+    LOG('effect(open): open=', open);
     if (!open) {
+      setStreamReady(false);
       stopCamera();
       workerRef.current?.terminate().catch(() => {});
       workerRef.current = null;
@@ -96,21 +101,32 @@ const ScanCardDialog: React.FC<ScanCardDialogProps> = ({ open, onClose, onScanne
 
     let mounted = true;
     setStatus('camera');
+    setStreamReady(false);
+    LOG('requesting camera (facingMode: environment)...');
 
     const initCamera = () => {
       navigator.mediaDevices
         .getUserMedia({ video: { facingMode: 'environment' }, audio: false })
         .then((stream) => {
+          LOG('getUserMedia success, tracks=', stream.getTracks().length);
           if (!mounted || !videoRef.current) {
+            LOG('unmounted or no videoRef, stopping stream');
             stream.getTracks().forEach((t) => t.stop());
             return;
           }
           streamRef.current = stream;
           const video = videoRef.current;
           video.srcObject = stream;
-          video.play().catch(() => {});
+          video
+            .play()
+            .then(() => {
+              LOG('video.play() resolved');
+              if (mounted) setStreamReady(true);
+            })
+            .catch((e) => LOG('video.play() failed', e));
         })
-        .catch(() => {
+        .catch((err) => {
+          LOG('getUserMedia failed', err?.name, err?.message, err);
           if (mounted) {
             setStatus('error');
             setErrorMessage('Camera access denied or unavailable.');
@@ -122,28 +138,60 @@ const ScanCardDialog: React.FC<ScanCardDialogProps> = ({ open, onClose, onScanne
 
     return () => {
       mounted = false;
+      setStreamReady(false);
       stopCamera();
     };
   }, [open]);
 
   useEffect(() => {
-    if (!open || status !== 'camera') return;
+    LOG('effect(scan): open=', open, 'status=', status, 'streamReady=', streamReady);
+    if (!open) return;
+    if (status !== 'camera') {
+      LOG('effect(scan): skipping (status is not camera)');
+      return;
+    }
+    if (!streamReady) {
+      LOG('effect(scan): skipping (stream not ready yet)');
+      return;
+    }
 
     const video = videoRef.current;
-    if (!video) return;
+    if (!video) {
+      LOG('no video element, skipping scan setup');
+      return;
+    }
+    LOG('video element present, starting scan setup; readyState=', video.readyState, 'videoWidth=', video.videoWidth, 'videoHeight=', video.videoHeight);
 
     const startAutoScan = () => {
-      if (intervalRef.current) return;
+      if (intervalRef.current) {
+        LOG('startAutoScan: interval already running');
+        return;
+      }
+      LOG('startAutoScan: starting interval', SCAN_INTERVAL_MS, 'ms');
 
       runOneScan.current = async () => {
-        if (scanningRef.current || !streamRef.current || !videoRef.current) return;
+        if (scanningRef.current) {
+          LOG('runOneScan: skip (already scanning)');
+          return;
+        }
+        if (!streamRef.current || !videoRef.current) {
+          LOG('runOneScan: skip (no stream or video)');
+          return;
+        }
         const v = videoRef.current;
-        if (v.readyState < 2) return;
+        if (v.readyState < 2) {
+          LOG('runOneScan: skip (video not ready, readyState=', v.readyState, ')');
+          return;
+        }
         const track = streamRef.current.getVideoTracks()[0];
         const settings = track?.getSettings?.();
         const w = v.videoWidth || settings?.width || 640;
         const h = v.videoHeight || settings?.height || 480;
-        if (w < 100 || h < 100) return;
+        LOG('runOneScan: frame size', w, 'x', h, 'videoWidth=', v.videoWidth, 'videoHeight=', v.videoHeight, 'settings=', settings);
+        if (w < 100 || h < 100) {
+          LOG('runOneScan: skip (dimensions too small)');
+          return;
+        }
 
         scanningRef.current = true;
         setStatus('processing');
@@ -151,8 +199,10 @@ const ScanCardDialog: React.FC<ScanCardDialogProps> = ({ open, onClose, onScanne
         const scale = 0.6;
         canvas.width = Math.floor(w * scale);
         canvas.height = Math.floor(h * scale);
+        LOG('runOneScan: capturing frame', canvas.width, 'x', canvas.height);
         const ctx = canvas.getContext('2d');
         if (!ctx) {
+          LOG('runOneScan: no canvas 2d context');
           setStatus('camera');
           scanningRef.current = false;
           return;
@@ -161,20 +211,31 @@ const ScanCardDialog: React.FC<ScanCardDialogProps> = ({ open, onClose, onScanne
         canvas.toBlob(
           async (blob) => {
             if (!blob || !open) {
+              LOG('toBlob callback: no blob or dialog closed', !!blob, open);
               setStatus('camera');
               scanningRef.current = false;
               return;
             }
+            LOG('toBlob: blob size', blob.size, 'bytes');
             try {
               let worker = workerRef.current;
               if (!worker) {
+                LOG('Loading tesseract.js...');
                 const Tesseract = await import('tesseract.js').then((m) => m.default ?? m);
+                LOG('tesseract.js loaded, creating worker(eng)...');
                 worker = await Tesseract.createWorker('eng');
                 workerRef.current = worker;
+                LOG('Tesseract worker created');
               }
+              LOG('worker.recognize() started');
               const { data } = await worker.recognize(blob);
-              const parsed = parseCardText(data.text || '');
+              const rawText = data.text || '';
+              const confidence = (data as { confidence?: number }).confidence;
+              LOG('OCR result: confidence=', confidence, 'text length=', rawText.length, 'preview=', JSON.stringify(rawText.slice(0, 200)));
+              const parsed = parseCardText(rawText);
+              LOG('parsed:', parsed);
               if (parsed.number && isValidCardNumber(parsed.number)) {
+                LOG('Valid card number found, closing and calling onScanned');
                 stopCamera();
                 await workerRef.current?.terminate();
                 workerRef.current = null;
@@ -187,7 +248,10 @@ const ScanCardDialog: React.FC<ScanCardDialogProps> = ({ open, onClose, onScanne
                 onClose();
                 return;
               }
+              LOG('No valid card number in this frame (parsed.number=', parsed.number, 'valid=', parsed.number ? isValidCardNumber(parsed.number) : false, ')');
             } catch (err) {
+              LOG('OCR error', err);
+              console.error('[ScanCard] OCR catch', err);
               if (!workerRef.current) {
                 setStatus('error');
                 setErrorMessage('Scan engine failed to load. Use "Add card details" to enter manually.');
@@ -209,13 +273,23 @@ const ScanCardDialog: React.FC<ScanCardDialogProps> = ({ open, onClose, onScanne
       runOneScan.current();
     };
 
-    const onCanPlay = () => startAutoScan();
-    const onLoadedData = () => startAutoScan();
+    const onCanPlay = () => {
+      LOG('video canplay');
+      startAutoScan();
+    };
+    const onLoadedData = () => {
+      LOG('video loadeddata');
+      startAutoScan();
+    };
     video.addEventListener('canplay', onCanPlay);
     video.addEventListener('loadeddata', onLoadedData);
-    if (video.readyState >= 2) startAutoScan();
+    if (video.readyState >= 2) {
+      LOG('video already readyState >= 2, startAutoScan now');
+      startAutoScan();
+    }
 
     const fallbackTimer = setTimeout(() => {
+      LOG('fallback 1.5s timer: startAutoScan');
       startAutoScan();
     }, 1500);
 
@@ -228,7 +302,7 @@ const ScanCardDialog: React.FC<ScanCardDialogProps> = ({ open, onClose, onScanne
         intervalRef.current = null;
       }
     };
-  }, [open, onScanned, onClose]);
+  }, [open, streamReady, onScanned, onClose]);
 
   const handleClose = () => {
     stopCamera();

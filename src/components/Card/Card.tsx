@@ -38,10 +38,6 @@ const Card: React.FC<IProps> = ({ number, cvcNumber, validUntil, cardHolder }) =
           <Typography variant="body2">{validUntil}</Typography>
         </Box>
       </Box>
-      <Box sx={{ mt: 2 }}>
-        <Typography variant="caption" sx={{ opacity: 0.7 }}>CVC</Typography>
-        <Typography variant="body2">{cvcNumber}</Typography>
-      </Box>
     </MuiCard>
     {/* <Box sx={{ display: 'flex', gap: 2, justifyContent: 'center' }}>
       <Box sx={{ textAlign: 'center', flex: 1 }}>

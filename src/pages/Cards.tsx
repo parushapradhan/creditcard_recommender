@@ -9,7 +9,13 @@ import ListItemText from '@mui/material/ListItemText';
 import AddIcon from '@mui/icons-material/Add';
 import CreditCardIcon from '@mui/icons-material/CreditCard';
 import QrCodeScannerIcon from '@mui/icons-material/QrCodeScanner';
-import Card from '../components/Card/Card';
+import ReactCreditCards from 'react-credit-cards-2';
+import 'react-credit-cards-2/dist/es/styles-compiled.css';
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Navigation, Pagination } from 'swiper/modules';
+import 'swiper/css';
+import 'swiper/css/navigation';
+import 'swiper/css/pagination';
 import Layout from '../components/Layout/Layout';
 import Divider from '../components/Divider/Divider';
 import ScanCardDialog from '../components/ScanCardDialog/ScanCardDialog';
@@ -22,10 +28,18 @@ export interface CardItem {
   cardHolder: string;
 }
 
+function toExpiry(validUntil: string): string {
+  const m = validUntil.replace(/\s/g, '').match(/(\d{1,2})\/?(\d{2,4})?/);
+  if (!m) return '••/••';
+  const mm = m[1].padStart(2, '0');
+  const yy = (m[2] || '••').length === 4 ? (m[2] as string).slice(-2) : (m[2] || '••');
+  return `${mm}/${yy}`;
+}
+
 const INITIAL_CARDS: CardItem[] = [
-  { number: '5244 2150 8252 ****', cvcNumber: '824', validUntil: '10 / 30', cardHolder: 'CENK SARI' },
-  { number: '5244 2150 8252 ****', cvcNumber: '824', validUntil: '10 / 30', cardHolder: 'CENK SARI' },
-  { number: '5244 2150 8252 ****', cvcNumber: '824', validUntil: '10 / 30', cardHolder: 'CENK SARI' },
+  { number: '4244 2150 8252 1234', cvcNumber: '824', validUntil: '10 / 30', cardHolder: 'CENK SARI' },
+  { number: '4532 1489 3301 5678', cvcNumber: '291', validUntil: '03 / 28', cardHolder: 'CENK SARI' },
+  { number: '4550 9234 1108 9012', cvcNumber: '556', validUntil: '08 / 29', cardHolder: 'CENK SARI' },
 ];
 
 const Cards: React.FC = () => {
@@ -118,15 +132,35 @@ const Cards: React.FC = () => {
         onScanned={handleScanned}
       />
       <Divider />
-      {cards.map((card, index) => (
-        <Card
-          key={`${card.number}-${index}`}
-          number={card.number}
-          cvcNumber={card.cvcNumber}
-          validUntil={card.validUntil}
-          cardHolder={card.cardHolder}
-        />
-      ))}
+      <Box sx={{ width: '100%', py: 1 }}>
+        <Swiper
+          modules={[Navigation, Pagination]}
+          spaceBetween={16}
+          slidesPerView={1}
+          loop={cards.length > 1}
+          pagination={{ clickable: true }}
+          navigation
+          className="cards-carousel"
+          style={{ paddingBottom: 48 }}
+        >
+          {cards.map((card, index) => (
+            <SwiperSlide key={`${card.number}-${index}`}>
+              <Box sx={{ display: 'flex', justifyContent: 'center', px: 1 }}>
+                <Box sx={{ maxWidth: 380, width: '100%' }}>
+                  <ReactCreditCards
+                    number={card.number.replace(/\s/g, '')}
+                    expiry={toExpiry(card.validUntil)}
+                    cvc={card.cvcNumber}
+                    name={card.cardHolder}
+                    issuer="visa"
+                    preview
+                  />
+                </Box>
+              </Box>
+            </SwiperSlide>
+          ))}
+        </Swiper>
+      </Box>
       <Divider />
     </Layout>
   );

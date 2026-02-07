@@ -15,7 +15,7 @@ const theme = createTheme({
     borderRadius: 16,
   },
   typography: {
-    fontFamily: '"Inter", "Helvetica", "Arial", sans-serif',
+    fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
     h4: { fontWeight: 600, fontSize: '1.5rem' },
     h5: { fontWeight: 600, fontSize: '1.25rem' },
     h6: { fontWeight: 600, fontSize: '1.125rem' },

@@ -38,13 +38,22 @@ const Signin: React.FC = () => {
           boxShadow: '0 8px 32px -8px rgba(0,0,0,0.25)',
         }}
       >
-        <Typography variant="h4" gutterBottom color="text.primary">
-          Hello! 👋
+        <Typography variant="h4" gutterBottom color="text.primary" align="center">
+          Sign in
         </Typography>
-        <Typography color="text.secondary" sx={{ mb: 3 }}>
-          Please sign in to your account or sign up a new account.
-        </Typography>
+
         <Box component="form" onSubmit={handleSubmit} noValidate>
+          <TextField
+            margin="normal"
+            required
+            fullWidth
+            id="name"
+            label="Name"
+            name="name"
+            type="text"
+            autoComplete="name"
+            autoFocus
+          />
           <TextField
             margin="normal"
             required
@@ -54,7 +63,6 @@ const Signin: React.FC = () => {
             name="email"
             type="email"
             autoComplete="email"
-            autoFocus
           />
           <TextField
             margin="normal"

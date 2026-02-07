@@ -16,9 +16,21 @@ const Cards: React.FC = () => (
       validUntil="10 / 30"
       cardHolder="CENK SARI"
     />
+        <Card
+      number="5244 2150 8252 ****"
+      cvcNumber="824"
+      validUntil="10 / 30"
+      cardHolder="CENK SARI"
+    />
+        <Card
+      number="5244 2150 8252 ****"
+      cvcNumber="824"
+      validUntil="10 / 30"
+      cardHolder="CENK SARI"
+    />
     <Divider />
-    <History detailed date="May 6" dateBalance="-€127.78" />
-    <Divider />
+ 
+
   </Layout>
 );
 

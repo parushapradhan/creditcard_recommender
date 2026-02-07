@@ -42,7 +42,7 @@ const Card: React.FC<IProps> = ({ number, cvcNumber, validUntil, cardHolder }) =
         <Typography variant="body2">{cvcNumber}</Typography>
       </Box>
     </MuiCard>
-    <Box sx={{ display: 'flex', gap: 2, justifyContent: 'center' }}>
+    {/* <Box sx={{ display: 'flex', gap: 2, justifyContent: 'center' }}>
       <Box sx={{ textAlign: 'center', flex: 1 }}>
         <Typography variant="caption" color="text.secondary">Balance</Typography>
         <Typography variant="body1">€ 783.45</Typography>
@@ -51,7 +51,7 @@ const Card: React.FC<IProps> = ({ number, cvcNumber, validUntil, cardHolder }) =
         <Typography variant="caption" color="text.secondary">Limit</Typography>
         <Typography variant="body1">€ 1250.00</Typography>
       </Box>
-    </Box>
+    </Box> */}
   </Box>
 );
 
